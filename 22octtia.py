@@ -1,38 +1,58 @@
-import tkinter as tk
-from tkinter import messagebox
+import streamlit as st
+import random
 
-def move_no_button():
-    x = no_button.winfo_x()
-    y = no_button.winfo_y()
-    new_x = (x + 50) % 300
-    new_y = (y + 50) % 200
-    no_button.place(x=new_x, y=new_y)
+st.set_page_config(page_title="CAN I BE YOUR BOYFRIEND or WILL YOU BE MY GIRLFRIEND ?", layout="centered")
 
-def yes_clicked():
-    messagebox.showinfo("Hurrayyyy!!", "Hurrayyyy!!")
-    root.destroy()
+st.markdown("""
+<style>
+.big-font {
+    font-size:24px !important;
+    font-weight: bold;
+    color: white;
+}
+.subtext {
+    font-size:16px;
+    color: white;
+}
+.stButton>button {
+    color: #E93030;
+    background-color: white;
+    border: none;
+    padding: 10px 24px;
+    font-size: 16px;
+}
+</style>
+""", unsafe_allow_html=True)
 
-root = tk.Tk()
-root.title("CAN I BE YOUR BOYFRIEND or WILL YOU BE MY GIRLFRIEND ?")
-root.geometry("400x300")
-root.configure(bg="#BDE17A")
+st.markdown('<p class="big-font">CAN I BE YOUR BOYFRIEND or<br>WILL YOU BE MY GIRLFRIEND ?</p>', unsafe_allow_html=True)
+st.markdown('<p class="subtext">obv you wanna be my girlfriend shutup</p>', unsafe_allow_html=True)
 
-header = tk.Label(root, text="CAN I BE YOUR BOYFRIEND or\nWILL YOU BE MY GIRLFRIEND ?",
-                  font=("Nunito", 16, "bold"), bg="#BDE17A", fg="white")
-header.pack(pady=20)
+col1, col2, col3 = st.columns(3)
 
-subtext = tk.Label(root, text="obv you wanna be my girlfriend shutup",
-                   font=("Nunito", 12), bg="#BDE17A", fg="white")
-subtext.pack()
+with col1:
+    if st.button("Yes"):
+        st.success("Hurrayyyy!!")
+        st.balloons()
 
-yes_button = tk.Button(root, text="Yes", command=yes_clicked,
-                       bg="white", fg="#E93030", font=("Nunito", 12),
-                       padx=15, pady=10, borderwidth=0, relief="flat")
-yes_button.place(x=100, y=150)
+with col3:
+    if 'no_button_pos' not in st.session_state:
+        st.session_state.no_button_pos = (0, 0)
 
-no_button = tk.Button(root, text="No", command=move_no_button,
-                      bg="white", fg="#E93030", font=("Nunito", 12),
-                      padx=15, pady=10, borderwidth=0, relief="flat")
-no_button.place(x=250, y=150)
+    def move_no_button():
+        x, y = st.session_state.no_button_pos
+        new_x = (x + 50) % 300
+        new_y = (y + 50) % 200
+        st.session_state.no_button_pos = (new_x, new_y)
 
-root.mainloop()
+    no_button = st.empty()
+    no_clicked = no_button.button("No", key=f"no_{random.randint(0, 1000)}", on_click=move_no_button)
+
+st.markdown(f"""
+<style>
+    [data-testid="stHorizontalBlock"] > div:nth-of-type(3) {{
+        transform: translate({st.session_state.no_button_pos[0]}px, {st.session_state.no_button_pos[1]}px);
+        transition: transform 0.3s ease;
+    }}
+</style>
+""", unsafe_allow_html=True)
+
